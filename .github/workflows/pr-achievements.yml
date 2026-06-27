@@ -22,8 +22,8 @@ jobs:
 
       - name: create and merge PRs
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "NullSec8"
+          git config user.email "166947772+NullSec8@users.noreply.github.com"
           mkdir -p logs
 
           for i in $(seq 1 ${{ inputs.count || 20 }}); do
@@ -41,4 +41,4 @@ jobs:
             git checkout main
           done
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
