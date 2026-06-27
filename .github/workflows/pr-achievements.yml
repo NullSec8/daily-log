@@ -1,0 +1,40 @@
+name: pr achievements
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 10 * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: create PR and merge
+        run: |
+          BRANCH="ach/$(date +%s)"
+          git checkout -b "$BRANCH"
+
+          echo "Automated update $(date)" >> pr-log.txt
+          git add -A
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "automated update $(date '+%Y-%m-%d %H:%M')"
+          git push origin "$BRANCH"
+
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "chore: automated update $(date '+%Y-%m-%d')" \
+            --body "Automated update"
+
+          sleep 60
+
+          gh pr merge "$BRANCH" --merge --delete-branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
