@@ -15,15 +15,36 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: generate daily log
+        id: generate
         shell: bash
         run: |
           DATE=$(date '+%Y-%m-%d %H:%M')
           MSGS=("added today's entry" "daily log update" "end of day" "logging in" "quick update")
           MSG=${MSGS[$RANDOM % ${#MSGS[@]}]}
 
-          QUOTE=$(curl -sf https://api.quotable.io/random | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'\"{d[\"content\"]}\" — {d[\"author\"]}')" 2>/dev/null || echo "Quote unavailable")
+          QUOTES=(
+            "\"The best way to predict the future is to invent it.\" — Alan Kay"
+            "\"Any fool can write code that a computer can understand. Good programmers write code that humans can understand.\" — Martin Fowler"
+            "\"First, solve the problem. Then, write the code.\" — John Johnson"
+            "\"It's not a bug — it's an undocumented feature.\" — Unknown"
+            "\"Talk is cheap. Show me the code.\" — Linus Torvalds"
+            "\"The only way to learn a new programming language is by writing programs in it.\" — Dennis Ritchie"
+            "\"Programming isn't about what you know; it's about what you can figure out.\" — Chris Pine"
+            "\"The computer was born to solve problems that did not exist before.\" — Bill Gates"
+          )
+          QUOTE=${QUOTES[$RANDOM % ${#QUOTES[@]}]}
 
-          JOKE=$(curl -sf 'https://v2.jokeapi.dev/joke/Programming?type=single' | python3 -c "import sys,json; print(json.load(sys.stdin).get('joke','No joke today'))" 2>/dev/null || echo "Joke unavailable")
+          JOKES=(
+            "Why do programmers prefer dark mode? Because light attracts bugs."
+            "A UX designer is walking a dev, a PM, and a QA through a forest..."
+            "How many programmers does it take to change a light bulb? None — that's a hardware problem."
+            "Why do Java developers wear glasses? Because they can't C#."
+            "There are only 10 types of people in the world: those who understand binary and those who don't."
+            "I told my computer I needed a break, and now it won't stop sending me KitKat ads."
+            "A SQL query walks into a bar, walks up to two tables and asks: 'Can I join you?'"
+            "Debugging: removing the parts of code that don't work. Also known as 'trying to delete the right lines'."
+          )
+          JOKE=${JOKES[$RANDOM % ${#JOKES[@]}]}
 
           FACTS=(
             "The first computer virus was created in 1983."
@@ -35,7 +56,7 @@ jobs:
             "There are over 700 programming languages."
             "The first computer bug was a literal moth (1947)."
             "Linux runs on 90% of the world's supercomputers."
-            "The @ symbol was used in email from the very beginning (1971)."
+            "The @ symbol was used in email since 1971."
           )
           FACT=${FACTS[$RANDOM % ${#FACTS[@]}]}
 
@@ -52,4 +73,4 @@ jobs:
 
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "daily $(date '+%Y-%m-%d')"
+          commit_message: "daily update"
