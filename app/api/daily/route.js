@@ -13,7 +13,16 @@ export async function GET() {
   const repo = process.env.GH_REPO || "daily-log";
   const today = new Date().toISOString().slice(0, 10);
 
-  const content = `# Daily Log\n\n## ${today}\n\n- Auto-generated on ${new Date().toISOString()}\n`;
+  const messages = [
+    "Daily update",
+    "End of day log",
+    "Today's entry",
+    "Logging in",
+    "Daily report",
+  ];
+  const msg = messages[Math.floor(Math.random() * messages.length)];
+
+  const content = `# Daily Log\n\n## ${today}\n\n- ${msg} at ${new Date().toLocaleTimeString()}\n`;
 
   let sha;
   try {
@@ -25,7 +34,7 @@ export async function GET() {
     owner,
     repo,
     path: "log.md",
-    message: `Daily update ${today}`,
+    message: `${msg} ${today}`,
     content: Buffer.from(content).toString("base64"),
     sha,
   });
