@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: "0 8,14,20 * * *"
 
+permissions:
+  contents: write
+
 jobs:
   commit:
     runs-on: ubuntu-latest
@@ -20,4 +23,4 @@ jobs:
         shell: pwsh
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "$((Get-Random -InputObject @('daily','log','update','entry'))[0]) $(Get-Date -Format 'yyyy-MM-dd')"
+          commit_message: "daily $(date '+%Y-%m-%d')"
