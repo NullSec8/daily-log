@@ -17,8 +17,6 @@ jobs:
       - name: generate daily log
         shell: bash
         run: |
-          if [ $((RANDOM % 3)) -ne 0 ]; then exit 0; fi
-
           DATE=$(date '+%Y-%m-%d %H:%M')
           MSGS=("added today's entry" "daily log update" "end of day" "logging in" "quick update")
           MSG=${MSGS[$RANDOM % ${#MSGS[@]}]}
