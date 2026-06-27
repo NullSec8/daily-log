@@ -2,6 +2,11 @@ name: pr achievements
 
 on:
   workflow_dispatch:
+    inputs:
+      count:
+        description: "Number of PRs to create"
+        default: 20
+        type: number
   schedule:
     - cron: "0 10 * * *"
 
@@ -15,26 +20,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: create PR and merge
+      - name: create and merge PRs
         run: |
-          BRANCH="ach/$(date +%s)"
-          git checkout -b "$BRANCH"
-
-          echo "Automated update $(date)" >> pr-log.txt
-          git add -A
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "automated update $(date '+%Y-%m-%d %H:%M')"
-          git push origin "$BRANCH"
+          mkdir -p logs
 
-          gh pr create \
-            --base main \
-            --head "$BRANCH" \
-            --title "chore: automated update $(date '+%Y-%m-%d')" \
-            --body "Automated update"
+          for i in $(seq 1 ${{ inputs.count || 20 }}); do
+            TS=$(date +%s)
+            BRANCH="pr/$TS-$i"
+            git checkout -b "$BRANCH"
+            echo "Update $i at $(date)" > "logs/log-$TS-$i.txt"
+            git add -A
+            git commit -m "chore: update $i"
+            git push origin "$BRANCH"
 
-          sleep 60
+            gh pr create --base main --head "$BRANCH" --title "chore: update $i" --body "auto" --fill
+            gh pr merge "$BRANCH" --merge --delete-branch
 
-          gh pr merge "$BRANCH" --merge --delete-branch
+            git checkout main
+          done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
