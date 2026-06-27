@@ -13,14 +13,47 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: random daily commit
+
+      - name: generate daily log
         run: |
-          $RANDOM = Get-Random -Minimum 0 -Maximum 3
-          if ($RANDOM -ne 0) { exit 0 }
-          $messages = @("added today's entry", "daily log update", "end of day", "logging in", "quick update")
-          $msg = $messages[(Get-Random -Maximum $messages.Length)]
-          echo "## $(Get-Date -Format 'yyyy-MM-dd HH:mm') — $msg" | Out-File -Append -Encoding utf8 log.md
-        shell: pwsh
+          RANDOM=$$(shuf -i 0-2 -n1)
+          if [ "$RANDOM" != "0" ]; then exit 0; fi
+
+          DATE=$(date '+%Y-%m-%d %H:%M')
+          MSGS=("added today's entry" "daily log update" "end of day" "logging in" "quick update")
+          MSG=${MSGS[$RANDOM % ${#MSGS[@]}]}
+
+          QUOTE=$(curl -sf https://api.quotable.io/random | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'\"{d[\"content\"]}\" — {d[\"author\"]}')" 2>/dev/null || echo "Quote unavailable")
+
+          JOKE=$(curl -sf 'https://v2.jokeapi.dev/joke/Programming?type=single' | python3 -c "import sys,json; print(json.load(sys.stdin).get('joke','No joke today'))" 2>/dev/null || echo "Joke unavailable")
+
+          FACTS=(
+            "The first computer virus was created in 1983."
+            "Python was named after Monty Python's Flying Circus."
+            "The first programmer was Ada Lovelace (1840s)."
+            "Git was created by Linus Torvalds in 2005."
+            "The first website went live in 1991."
+            "JavaScript was created in 10 days in 1995."
+            "There are over 700 programming languages."
+            "The first computer bug was a literal moth (1947)."
+            "Linux runs on 90% of the world's supercomputers."
+            "The @ symbol was used in email from the very beginning (1971)."
+          )
+          FACT=${FACTS[$RANDOM % ${#FACTS[@]}]}
+
+          cat >> log.md <<EOF
+
+          ## $DATE — $MSG
+
+          **Quote:** $QUOTE
+
+          **Joke:** $JOKE
+
+          **Fact:** $FACT
+
+          ---
+          EOF
+
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "daily $(date '+%Y-%m-%d')"
