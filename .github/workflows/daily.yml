@@ -14,10 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: generate daily log
-        id: generate
+      - name: generate & commit
         shell: bash
         run: |
+          # random skip — only 1 of 3 runs actually commits
+          if [ $((RANDOM % 3)) -ne 0 ]; then exit 0; fi
+
           DATE=$(date '+%Y-%m-%d %H:%M')
           MSGS=("added today's entry" "daily log update" "end of day" "logging in" "quick update")
           MSG=${MSGS[$RANDOM % ${#MSGS[@]}]}
@@ -36,11 +38,9 @@ jobs:
 
           JOKES=(
             "Why do programmers prefer dark mode? Because light attracts bugs."
-            "A UX designer is walking a dev, a PM, and a QA through a forest..."
             "How many programmers does it take to change a light bulb? None — that's a hardware problem."
             "Why do Java developers wear glasses? Because they can't C#."
             "There are only 10 types of people in the world: those who understand binary and those who don't."
-            "I told my computer I needed a break, and now it won't stop sending me KitKat ads."
             "A SQL query walks into a bar, walks up to two tables and asks: 'Can I join you?'"
             "Debugging: removing the parts of code that don't work. Also known as 'trying to delete the right lines'."
           )
@@ -71,6 +71,8 @@ jobs:
           echo "" >> log.md
           echo "---" >> log.md
 
-      - uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "daily update"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "daily update"
+          git push
