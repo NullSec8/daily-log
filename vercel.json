@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/daily/route.js": {
+    "app/api/daily/route.js": {
       "maxDuration": 10
     }
   }

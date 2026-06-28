@@ -5,7 +5,7 @@ on:
     inputs:
       count:
         description: "Number of PRs to create"
-        default: 20
+        default: 1
         type: number
   schedule:
     - cron: "0 10 * * *"
@@ -26,7 +26,7 @@ jobs:
           git config user.email "166947772+NullSec8@users.noreply.github.com"
           mkdir -p logs
 
-          for i in $(seq 1 ${{ inputs.count || 20 }}); do
+          for i in $(seq 1 ${{ inputs.count || 1 }}); do
             TS=$(date +%s)
             BRANCH="pr/$TS-$i"
             git checkout -b "$BRANCH"
@@ -39,6 +39,7 @@ jobs:
             gh pr merge "$BRANCH" --merge --delete-branch
 
             git checkout main
+            git pull origin main
           done
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}

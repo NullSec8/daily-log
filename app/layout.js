@@ -1,8 +1,16 @@
-export const metadata = { title: "GitHub Daily Automation" };
+export const metadata = {
+  title: "Daily Log — GitHub Automation",
+  description: "Automated daily commit log powered by GitHub Actions",
+};
 
-export default function Root({ children }) {
+export const viewport = "width=device-width, initial-scale=1";
+
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+      </head>
       <body>{children}</body>
     </html>
   );
