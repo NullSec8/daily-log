@@ -172,3 +172,13 @@ But I'd use RGB for you.
 **Fact:** The first computer bug was a literal moth (1947).
 
 ---
+
+## 2026-07-05 10:24 — quick update
+
+**Quote:** "Talk is cheap. Show me the code." — Linus Torvalds
+
+**Joke:** Debugging: removing the parts of code that don't work. Also known as 'trying to delete the right lines'.
+
+**Fact:** The @ symbol was used in email since 1971.
+
+---
