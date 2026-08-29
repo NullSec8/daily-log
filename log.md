@@ -702,3 +702,13 @@ But I'd use RGB for you.
 **Fact:** The first programmer was Ada Lovelace (1840s).
 
 ---
+
+## 2026-08-29 13:46 — quick update
+
+**Quote:** "First, solve the problem. Then, write the code." — John Johnson
+
+**Joke:** Debugging: removing the parts of code that don't work. Also known as 'trying to delete the right lines'.
+
+**Fact:** The @ symbol was used in email since 1971.
+
+---
