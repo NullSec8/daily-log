@@ -58,6 +58,8 @@ jobs:
           for i in $(seq 1 "$COUNT"); do
             TS=$(date +%s)
             BRANCH="pr/$TS-$i"
+            git checkout main
+            git pull --rebase origin main
             git checkout -b "$BRANCH"
             echo "Update $i at $(date)" > "logs/log-$TS-$i.txt"
             git add -A
@@ -65,10 +67,30 @@ jobs:
             git push origin "$BRANCH"
 
             gh pr create --base main --head "$BRANCH" --title "chore: update $i" --body "auto" --fill
-            gh pr merge "$BRANCH" --merge --delete-branch
 
-            git checkout main
-            git pull --rebase origin main
+            # Main can move under us (the daily commit schedule runs in
+            # parallel), which makes the merge fail. Rebase the PR branch and
+            # retry the merge a few times before giving up.
+            merged=false
+            for attempt in $(seq 1 5); do
+              git fetch origin
+              if git rebase origin/main "$BRANCH" >/dev/null 2>&1; then
+                git push --force-with-lease origin "$BRANCH" >/dev/null 2>&1 || true
+              else
+                git rebase --abort >/dev/null 2>&1 || true
+              fi
+              if gh pr merge "$BRANCH" --merge --delete-branch 2>/dev/null; then
+                merged=true
+                break
+              fi
+              echo "merge attempt $attempt failed for $BRANCH, retrying in 15s"
+              sleep 15
+            done
+
+            if [ "$merged" != "true" ]; then
+              echo "::error::failed to merge $BRANCH after 5 attempts"
+              exit 1
+            fi
           done
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
